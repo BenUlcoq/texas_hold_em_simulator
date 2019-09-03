@@ -17,4 +17,7 @@ class PokerTest < Test::Unit::TestCase
         assert_equal('Robert Downey', @poker.table.player_positions[1].player_name)
     end
 
+    def lets_see
+
+    end
 end
