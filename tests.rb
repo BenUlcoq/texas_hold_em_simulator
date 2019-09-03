@@ -34,4 +34,16 @@ class PokerTest < Test::Unit::TestCase
   def test_river
     assert_equal(%w[6H 6S 6D 7H 7D], @poker.community_cards)
   end
+
+  # def test_fold
+  #   assert_equal(false, @poker.player_positions[0].folded)
+  # end
+
+  # def test_call
+
+  # end
+
+
+    
+
 end
