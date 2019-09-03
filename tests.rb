@@ -8,16 +8,16 @@ class PokerTest < Test::Unit::TestCase
         @poker = Poker.new(8, 'Ben Ulcoq', 'Robert Downey')
     end
 
-    def test_players
-        assert_equal(8, @poker.table.player_positions.length)
-    end
+    # def test_players
+    #     assert_equal(8, @poker.table.player_positions.length)
+    # end
 
-    def test_args
-        assert_equal('Ben Ulcoq', @poker.table.player_positions[0].player_name)
-        assert_equal('Robert Downey', @poker.table.player_positions[1].player_name)
-    end
+    # def test_args
+    #     assert_equal('Ben Ulcoq', @poker.table.player_positions[0].player_name)
+    #     assert_equal('Robert Downey', @poker.table.player_positions[1].player_name)
+    # end
 
-    def lets_see
-
+    def test_hole_cards
+        assert_equal(['2C', '4C'], @poker.table.player_positions[0].hole_cards)
     end
 end
