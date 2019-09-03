@@ -234,7 +234,7 @@ class Poker
       @input = Integer(@input_string) rescue false
 
       if @input && @input >= @table_current_bet * 2
-        if @active_players[0].chip_stack <= @table_current_bet
+        if @active_players[0].chip_stack <= @input
           all_in
           @input_string = nil
           break
