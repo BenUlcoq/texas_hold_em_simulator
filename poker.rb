@@ -35,7 +35,6 @@ class Poker
     @table_current_bet = 0
     @stage_of_play = 0
     @initial_raiser = nil
-    @player_positions.rotate!
     @active_players = @player_positions.dup
     init_deck
     deal_hole_cards
@@ -44,17 +43,19 @@ class Poker
       puts "#{player.player_name} had #{player.hole_cards}"
     end
     puts "The table cards were #{community_cards}"
+    @player_positions.rotate!
   end
 
   def poker_hand
     @active_players[0].current_bet = @small_blind_value
     @active_players[1].current_bet = @big_blind_value
     @table_current_bet = @active_players[1].current_bet
+    @pot_size += @active_players[0].current_bet + @active_players[1].current_bet
     @active_players.rotate!(2)
 
     while @active_players.length > 1 && @stage_of_play < 4
 
-      puts "#{community_cards}"
+      puts community_cards.to_s
       if @stage_of_play == 1
         deal_flop
       elsif @stage_of_play == 2 && @community_cards.length != 4
@@ -65,24 +66,28 @@ class Poker
 
       loop do
         @active_players.map do |player|
-          if player.current_bet == @table_current_bet
-            player.acted == false unless player.chip_stack == 0
-          end
           @active_players.delete(player) if player.folded == true
         end
 
         if @active_players[0].acted == true && @active_players[0].current_bet == @table_current_bet
           @stage_of_play += 1
           @active_players.map do |player|
+            if player.current_bet == @table_current_bet
+              puts "Resetting #{player.player_name}"
+              player.acted = false unless player.chip_stack == 0
+            end
             player.current_bet = 0
           end
+          sleep(3)
           @table_current_bet = 0
           break
+
         elsif @active_players[0].acted == true && @active_players[0].chip_stack == 0
           @active_players[0].rotate!
         else
           loop do
             system 'clear'
+            puts @stage_of_play
             puts "#{@active_players[0].player_name}, are you ready to act?"
             puts 'Enter (Y)es to continue'
             @input = gets.chomp
@@ -92,11 +97,18 @@ class Poker
               puts "#{@active_players[0].player_name}, it is your turn to act."
               puts "The total pot size (including current bets) is #{@pot_size} chips."
               puts "You have #{@active_players[0].chip_stack} chips."
+
               if @table_current_bet > 0
                 puts "The current bet is #{table_current_bet}"
               else
                 puts 'There has been no betting yet this round.'
               end
+              @active_players.map do |player|
+                if player.current_bet != 0
+                  print "#{player.player_name} has bet #{player.current_bet} chips. "
+                end
+              end
+              puts ''
 
               if @stage_of_play > 0
                 puts "The current community cards are #{@community_cards.join(' ')}"
@@ -120,8 +132,10 @@ class Poker
 
                   elsif @input.downcase == 'r' || @input.downcase == 'raise'
                     raise_bet
-                    @active_players.rotate!
-                    break
+                    if !@input_string
+                      @active_players.rotate!
+                      break
+                    end
                   else
                     puts 'Please enter a valid input.'
                   end
@@ -140,8 +154,10 @@ class Poker
                     break
                   elsif @input.downcase == 'r' || @input.downcase == 'raise'
                     raise_bet
-                    @active_players.rotate!
-                    break
+                    if !@input_string
+                      @active_players.rotate!
+                      break
+                    end
                   elsif @input.downcase == 'f' || @input.downcase == 'fold'
                     fold_hand
                     @active_players.rotate!
@@ -175,6 +191,7 @@ class Poker
   def fold_hand
     @active_players[0].folded = true
     pot_adjustment
+    @active_players[0].current_bet = 0
     puts 'You have folded your hand.'
   end
 
@@ -211,20 +228,26 @@ class Poker
 
   def raise_bet
     loop do
-      puts 'How much would you like to raise?'
-      @input = gets.chomp
+      puts 'How much would you like to raise? Or enter (B)ack to change your mind.'
 
-      if Integer(@input) && Integer(@input) >= @table_current_bet * 2
+      @input_string = gets.chomp
+      @input = Integer(@input_string) rescue false
+
+      if @input && @input >= @table_current_bet * 2
         if @active_players[0].chip_stack <= @table_current_bet
           all_in
+          @input_string = nil
           break
         else
-          @active_players[0].current_bet = Integer(@input)
+          @active_players[0].current_bet = @input
           chip_adjustment
+          @input_string = nil
           break
         end
-      elsif Integer(@input) && Integer(@input) <= @table_current_bet * 2
+      elsif @input && @input <= @table_current_bet * 2
         puts "Please enter a valid raise amount - your raise must be at least twice the current bet. Current bet is #{@table_current_bet}"
+      elsif @input_string.downcase == "b" ||  @input_string.downcase == "back"
+        break
       else
         puts 'Please enter a valid, whole number'
       end
