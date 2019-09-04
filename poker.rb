@@ -4,9 +4,10 @@
 require 'random_data'
 require_relative 'deck'
 require_relative 'player'
+require 'ruby-poker'
 
 class Poker
-  attr_reader :player_positions, :deck, :community_cards
+  attr_reader :player_positions, :deck, :community_cards, :active_players
   attr_accessor :table_current_bet
 
   # Passes the player details supplied to the @player_positions array upon initialization.
@@ -39,11 +40,44 @@ class Poker
     init_deck
     deal_hole_cards
     poker_hand
-    @active_players.map do |player|
-      puts "#{player.player_name} had #{player.hole_cards}"
+    if @active_players.length != 1
+      best_hand
+      determine_winner
+      payout
+    else
+      payout
     end
-    puts "The table cards were #{community_cards}"
     @player_positions.rotate!
+    # @active_players.clear
+  end
+
+  def payout
+    until @pot_size.zero?
+      if @active_players[0].max_winnings < @pot_size && @active_players[0].max_winnings != 0
+        puts "#{@active_players[0].player_name} won #{@active_players[0].max_winnings} with high hand: #{@active_players[0].strongest_hand}."
+        @active_players[0].chip_stack += @active_players[0].max_winnings
+        @pot_size -= @active_players[0].max_winnings
+        @active_players[0].max_winnings = 0
+        @active_players.shift
+      else
+        puts "#{@active_players[0].player_name} won #{@pot_size} chips with high hand: #{@active_players[0].strongest_hand}."
+        @active_players[0].chip_stack += @pot_size
+        @pot_size = 0
+        puts "#{@active_players[0].player_name} now has #{@active_players[0].chip_stack} chips."
+      end
+    end
+  end
+
+  def determine_winner
+    @active_players.sort! do |player1, player2|
+      if player1.strongest_hand > player2.strongest_hand
+        -1
+      elsif player1.strongest_hand < player2.strongest_hand
+        1
+      else
+        0
+      end
+    end
   end
 
   def poker_hand
@@ -74,15 +108,15 @@ class Poker
           @active_players.map do |player|
             if player.current_bet == @table_current_bet
               puts "Resetting #{player.player_name}"
-              player.acted = false unless player.chip_stack == 0
+              player.acted = false unless player.chip_stack.zero?
             end
             player.current_bet = 0
           end
-          sleep(3)
+          sleep(0.5)
           @table_current_bet = 0
           break
 
-        elsif @active_players[0].acted == true && @active_players[0].chip_stack == 0
+        elsif @active_players[0].acted == true && @active_players[0].chip_stack.zero?
           @active_players[0].rotate!
         else
           loop do
@@ -98,7 +132,7 @@ class Poker
               puts "The total pot size (including current bets) is #{@pot_size} chips."
               puts "You have #{@active_players[0].chip_stack} chips."
 
-              if @table_current_bet > 0
+              if @table_current_bet.positive?
                 puts "The current bet is #{table_current_bet}"
               else
                 puts 'There has been no betting yet this round.'
@@ -110,7 +144,7 @@ class Poker
               end
               puts ''
 
-              if @stage_of_play > 0
+              if @stage_of_play.positive?
                 puts "The current community cards are #{@community_cards.join(' ')}"
               end
 
@@ -132,7 +166,7 @@ class Poker
 
                   elsif @input.downcase == 'r' || @input.downcase == 'raise'
                     raise_bet
-                    if !@input_string
+                    unless @input_string
                       @active_players.rotate!
                       break
                     end
@@ -154,7 +188,7 @@ class Poker
                     break
                   elsif @input.downcase == 'r' || @input.downcase == 'raise'
                     raise_bet
-                    if !@input_string
+                    unless @input_string
                       @active_players.rotate!
                       break
                     end
@@ -231,22 +265,24 @@ class Poker
       puts 'How much would you like to raise? Or enter (B)ack to change your mind.'
 
       @input_string = gets.chomp
-      @input = Integer(@input_string) rescue false
+      @input = begin
+                 Integer(@input_string)
+               rescue StandardError
+                 false
+               end
 
       if @input && @input >= @table_current_bet * 2
         if @active_players[0].chip_stack <= @input
           all_in
-          @input_string = nil
-          break
         else
           @active_players[0].current_bet = @input
           chip_adjustment
-          @input_string = nil
-          break
         end
+        @input_string = nil
+        break
       elsif @input && @input <= @table_current_bet * 2
         puts "Please enter a valid raise amount - your raise must be at least twice the current bet. Current bet is #{@table_current_bet}"
-      elsif @input_string.downcase == "b" ||  @input_string.downcase == "back"
+      elsif @input_string.downcase == 'b' || @input_string.downcase == 'back'
         break
       else
         puts 'Please enter a valid, whole number'
@@ -254,49 +290,74 @@ class Poker
     end
   end
 
-  # Defines a method for launching the homescreen of the application.
-  def home_screen
-    puts "Welcome to Texas Hold 'Em Simulator!"
-    play_poker if gets.chomp == 'play'
-  end
-
-  # Defines a method for initializing an instance of the Deck class.
-  def init_deck
-    @deck = Deck.new
-  end
-
-  # Defines a method for dealing cards to each player.
-  def deal_hole_cards
-    # Initiates a loop, iterating over each player within the active players array.
+  def best_hand
     @active_players.map do |player|
-      # Removes any persistent cards from the player's hands.
-      player.hole_cards.clear
+      next unless @stage_of_play > 0
+
+      @all_combos = (player.hole_cards + @community_cards).combination(5).to_a
+      @best_hand = PokerHand.new
+      @current_hand = nil
+
+      @all_combos.map do |hand|
+        next unless @all_combos.length > 1
+
+        @current_hand = PokerHand.new(hand)
+        if @current_hand > @best_hand
+          @best_hand = @current_hand
+        else
+          @all_combos.delete(hand)
+        end
+      end
+
+      player.strongest_hand = @best_hand
+      puts "#{player.player_name} has #{player.strongest_hand}"
     end
-    # Initiates a loop that will repeat twice.
-    2.times do
-      # Initiates a loop, iterating over each player with the active players array.
+  end
+
+    # Defines a method for launching the homescreen of the application.
+    def home_screen
+      puts "Welcome to Texas Hold 'Em Simulator!"
+      play_poker if gets.chomp == 'play'
+    end
+
+    # Defines a method for initializing an instance of the Deck class.
+    def init_deck
+      @deck = Deck.new
+    end
+
+    # Defines a method for dealing cards to each player.
+    def deal_hole_cards
+      # Initiates a loop, iterating over each player within the active players array.
       @active_players.map do |player|
-        # Moves a card from the top of the deckto the current player's hand.
-        player.hole_cards.push(@deck.cards.shift)
+        # Removes any persistent cards from the player's hands.
+        player.hole_cards.clear
+      end
+      # Initiates a loop that will repeat twice.
+      2.times do
+        # Initiates a loop, iterating over each player with the active players array.
+        @active_players.map do |player|
+          # Moves a card from the top of the deckto the current player's hand.
+          player.hole_cards.push(@deck.cards.shift)
+        end
       end
     end
-  end
 
-  # Defines a method for dealing three cards from the top of the deck to the community table cards.
-  def deal_flop
-    # Burns the top card of the deck.
-    @deck.cards.shift
-    # Moves the top three cards of the deck into the community table cards array.
-    @community_cards = @deck.cards.shift(3)
-  end
+    # Defines a method for dealing three cards from the top of the deck to the community table cards.
+    def deal_flop
+      # Burns the top card of the deck.
+      @deck.cards.shift
+      # Moves the top three cards of the deck into the community table cards array.
+      @community_cards = @deck.cards.shift(3)
+    end
 
-  # Defines a method for dealing a single card from the top of the deck to the comunity table cards.
-  def deal_post_flop
-    # Burns the top card of the deck.
-    @deck.cards.shift
-    # Moves the top card of the deck into the community table cards array.
-    @community_cards.push(@deck.cards.shift)
-  end
+    # Defines a method for dealing a single card from the top of the deck to the comunity table cards.
+    def deal_post_flop
+      # Burns the top card of the deck.
+      @deck.cards.shift
+      # Moves the top card of the deck into the community table cards array.
+      @community_cards.push(@deck.cards.shift)
+    end
 
-  def player_action; end
+    def player_action; end
 end
+
