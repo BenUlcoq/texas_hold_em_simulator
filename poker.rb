@@ -35,7 +35,6 @@ class Poker
     @pot_size = 0
     @table_current_bet = 0
     @stage_of_play = 0
-    @initial_raiser = nil
     @active_players = @player_positions.dup
     init_deck
     deal_hole_cards
@@ -48,7 +47,6 @@ class Poker
       payout
     end
     @player_positions.rotate!
-    # @active_players.clear
   end
 
   def payout
