@@ -31,19 +31,28 @@ class PokerTest < Test::Unit::TestCase
   #     assert_equal(['6H', '6S', '6D', '7H'], @poker.community_cards)
   # end
 
-  def test_river
-    assert_equal(%w[6H 6S 6D 7H 7D], @poker.community_cards)
-  end
+  # def test_river
+  #   assert_equal(%w[6H 6S 6D 7H 7D], @poker.community_cards)
+  # end
 
   # def test_fold
   #   assert_equal(false, @poker.player_positions[0].folded)
   # end
 
-  # def test_call
-
+  # def test_winner
+  #   system "clear"
+  #   @poker.active_players.map do |player|
+  #     puts "#{player.player_name} has #{player.strongest_hand}"
+  #   end
+  #   # puts "#{@poker.active_players[0].player_name} had #{@poker.active_players[0].strongest_hand}"
+  #   # puts "#{@poker.active_players[1].player_name} had #{@poker.active_players[1].strongest_hand}"
+  #   assert_equal(true, @poker.active_players[0].strongest_hand > @poker.active_players[1].strongest_hand)
   # end
 
-
-    
+  def test_chip_win
+    assert_equal(true, @poker.active_players[0].chip_stack > 5000)
+  end
+  
+  
 
 end
