@@ -56,15 +56,12 @@ Before coding could begin, a comprehensive development plan was created to give 
 
 Once the application idea was finalised and scoped appropriately, a flow diagram was completed as a starting point for not only figuring out a rudimentary version of the logic and code structure, but also as a proof of concept to ensure that the idea had merit and was achievable. 
 
-From here, the features, functionality and user experience were taken from a concept and blocked out clearly. This provided an excellent foundation for nailing down the code structure (see Code Structure). Test Driven Development techniques were to be observed throughout the development process, and as such the planning needed to reflect this.
+From here, the features, functionality and user experience were taken from a concept and blocked out clearly. This provided an excellent foundation for initial planning of the code structure. Test Driven Development techniques were to be observed throughout the development process, and as such the planning needed to reflect this.
 
-In order to ensure that the development of the application ran smoothly, Trello, a project management application was used. Trello allows for individual features to be tracked and to have a checklist of goals for each feature, allowing for an easy way to ensure TDD was being used, and effectively solving the problem of time-management given the short timeframe allowed for development. Without Trello, the program could certainly still have been created, but the quality would likely be severely lacking and as such, much harder to build on in the future.
-
-###  Testing
-
+In order to ensure that the development of the application ran smoothly, Trello, a project management application was used. Trello allows for individual user stories to be tracked and to have a checklist of goals for each user story, allowing for an easy way to ensure TDD was being used, and effectively solving the problem of time-management given the short timeframe allowed for development. Without Trello, the program could certainly still have been created, but the quality would likely be severely lacking and as such, much harder to build on in the future. The tracking of user stories as an implementation technique allowed for agile development if the initially conceived code structure was found to be ineffective during development.
 
 ### Code Structure
-The initially connected structure for this particular application was made up of four key components.  These include:
+The initially conceived structure for this particular application was made up of four key components.  These include:
 
 #### The Application Interface
 * `poker.rb`
@@ -75,8 +72,7 @@ The initially connected structure for this particular application was made up of
 * A module containing the main container for flow control, logic and calculations relating to the progression of the game.
 
 #### The Table
-* `table.rb`
-* A class used to keep track and store all pieces of data needed to effectively manage the flow of a poker game.
+* `table.rb` A class used to keep track and store all pieces of data needed to effectively manage the flow of a poker game.
 * `@deck`an array representing the deck of cards containing all 52 playing cards.
 * `@Big_blind_value` is an integer representing the value of the big blind.
 * `@Small_blind_value`is an integer representing the value of the small blind.
@@ -88,10 +84,9 @@ The initially connected structure for this particular application was made up of
 * `@action`is an integer value used to track which player needs to choose an action.
 
 #### The Players
-* `player.rb`
-* A class used to represent each player at the table and to track and store the pieces of data relevant to each player.
+* `player.rb` A class used to represent each player at the table and to track and store the pieces of data relevant to each player.
 * `@chip_stack` is an integer indicating the number of chips available for the player to bet with.
-`@player_position`is an integer indicating the player’s position at the table.
+* `@player_position`is an integer indicating the player’s position at the table.
 * `@hole_cards`is an array containing the cards that have been dealt to the player.
 * `@player_current_bet`is an integer indicating how much the player has bet for this round of action.
 * `@folded`is a boolean value determining whether the player is still in the hand.
@@ -104,6 +99,22 @@ Colorize
 Ruby Poker
 Artii
 TTY Spinner
+
+
+## Deviation from the Implementation Plan and Agile Development
+During the development process, a number of issues were encountered regarding viability, efficiency and complexity of the code structure that needed to be addressed.
+As outlined in the second Development log, there were significant issues related to class structure which were significantly limiting the efficiency of both development and the MVP itself. These issues led to a severe hinderance in the fulfilment of the previously established user stories. To solve this, the class structure was simplified so that the table and engine classes were combined into the poker class. 
+
+On top of this, during the test-driven development process it was apparent that some further minor adjustments were needed in order to improve code quality and the flow control. A number of variables were changed, removed or added to streamline the application as outlined below.
+
+* `@deck` was turned into its own class to allow for exstensibility for future applications.
+* `@action` was modified to be a boolean 'acted' to track whether a player had already acted within the hand.
+* `@active_players` was an array created to track players who had not folded their hands - allowing for more efficient calculations during the flow of the game.
+* `@player_position` was uneccessary after the implementation of @active_players.
+
+###  Testing
+Throughout the development process, test driven development techniques were observed to ensure that the application was coded in an effective, efficient manner, both in terms of development and the code structure. Test driven development also allows for agile development by choosing a clear end-goal (the test) for a feature, which would be related to a user story, meaning that the initial concept for that features code structure can be updated during development if requried.
+
 
 ## Instructions for Use
 
