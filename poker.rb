@@ -4,14 +4,15 @@
 require 'random_data'
 require_relative 'deck'
 require_relative 'player'
+require_relative 'interface'
 require 'ruby-poker'
 
 class Poker
-  attr_reader :player_positions, :deck, :community_cards, :active_players
+  attr_reader :player_positions, :deck, :community_cards, :active_players, :pot_size
   attr_accessor :table_current_bet
 
   # Passes the player details supplied to the @player_positions array upon initialization.
-  def initialize(number_of_players, *args)
+  def initialize(number_of_players, args)
     @player_positions = args + Array.new(number_of_players - args.length)
     # Loops through the @player_positions array.
     @player_positions.map! do |name|
@@ -26,8 +27,23 @@ class Poker
     end
     @big_blind_value = 50
     @small_blind_value = 25
+    @hands_played = 0
 
-    home_screen
+    @interface = Interface.new
+    @interface.home_screen
+
+    loop do
+      @input = STDIN.gets.chomp
+      if @input.downcase == 'p' || @input.downcase == 'play'
+        play_poker
+      elsif @input.downcase == 'r' || @input.downcase == 'rules'
+        @interface.poker_rules
+      elsif @input.downcase == 'q' || @input.downcase == 'quit'
+        system 'exit'
+      else
+        puts 'Please enter a valid command!'
+      end
+    end
   end
 
   # Defines a method containing the flow control for a hand of poker.
@@ -47,6 +63,8 @@ class Poker
       payout
     end
     @player_positions.rotate!
+    @hands_played += 1
+    play_poker
   end
 
   def payout
@@ -79,6 +97,30 @@ class Poker
   end
 
   def poker_hand
+    if @hands_played == 0
+      system 'clear'
+      puts "Let's play some poker!"
+      sleep(1)
+      puts "There are #{@player_positions.length} players at the table."
+      sleep(1)
+      puts 'Starting stacks are 5000 chips.'
+      sleep(1)
+      puts 'The small blind is 25 chips and the big blind is 50 chips.'
+      sleep(2)
+    end
+
+    puts 'Are you ready to play? Enter (Y)es to proceed or (N)o to return to the main menu.'
+    loop do
+      @input = STDIN.gets.chomp
+      if @input.downcase == 'y' || @input.downcase == 'yes'
+        break
+      elsif @input.downcase == 'n' || @input.downcase == 'no'
+        @interface.home_screen
+      else
+        puts 'Please enter a valid input.'
+      end
+    end
+
     @active_players[0].current_bet = @small_blind_value
     @active_players[1].current_bet = @big_blind_value
     @table_current_bet = @active_players[1].current_bet
@@ -89,8 +131,12 @@ class Poker
 
       puts community_cards.to_s
       if @stage_of_play == 1
+        puts 'The flop is now being being dealt.'
+        sleep(2)
         deal_flop
       elsif @stage_of_play == 2 && @community_cards.length != 4
+        puts 'The turn is now being being dealt.'
+        sleep(2)
         deal_post_flop
       elsif @stage_of_play == 3 && @community_cards.length != 5
         deal_post_flop
@@ -105,42 +151,24 @@ class Poker
           @stage_of_play += 1
           @active_players.map do |player|
             if player.current_bet == @table_current_bet
-              puts "Resetting #{player.player_name}"
               player.acted = false unless player.chip_stack.zero?
             end
             player.current_bet = 0
           end
-          sleep(0.5)
           @table_current_bet = 0
           break
 
         elsif @active_players[0].acted == true && @active_players[0].chip_stack.zero?
           @active_players[0].rotate!
         else
+
+          @interface.ready_check(@active_players[0])
           loop do
-            system 'clear'
-            puts @stage_of_play
-            puts "#{@active_players[0].player_name}, are you ready to act?"
-            puts 'Enter (Y)es to continue'
-            @input = gets.chomp
+            @input = STDIN.gets.chomp
 
             if @input.downcase == 'y' || @input.downcase == 'yes'
-              system 'clear'
-              puts "#{@active_players[0].player_name}, it is your turn to act."
-              puts "The total pot size (including current bets) is #{@pot_size} chips."
-              puts "You have #{@active_players[0].chip_stack} chips."
-
-              if @table_current_bet.positive?
-                puts "The current bet is #{table_current_bet}"
-              else
-                puts 'There has been no betting yet this round.'
-              end
-              @active_players.map do |player|
-                if player.current_bet != 0
-                  print "#{player.player_name} has bet #{player.current_bet} chips. "
-                end
-              end
-              puts ''
+              @interface.player_info(@active_players[0], @pot_size)
+              @interface.current_info(@active_players, @table_current_bet)
 
               if @stage_of_play.positive?
                 puts "The current community cards are #{@community_cards.join(' ')}"
@@ -149,13 +177,13 @@ class Poker
               puts "You have #{@active_players[0].hole_cards.join(' and ')}"
               puts 'What you you like to do?'
 
-              if @active_players[0].current_bet == @table_current_bet && @active_players[0].acted == true
+              if @active_players[0].acted == true && @active_players[0].current_bet == @table_current_bet
                 break
 
               elsif @active_players[0].current_bet == @table_current_bet
                 loop do
                   puts 'You can (C)heck or (R)aise.'
-                  @input = gets.chomp
+                  @input = STDIN.gets.chomp
 
                   if @input.downcase == 'c' || @input.downcase == 'check'
                     check_action
@@ -171,14 +199,12 @@ class Poker
                   else
                     puts 'Please enter a valid input.'
                   end
-                  @active_players.rotate!
-                  break
                 end
                 break
               elsif @active_players[0].current_bet < @table_current_bet
                 loop do
                   puts 'You can (C)all, (R)aise, or (F)old.'
-                  @input = gets.chomp
+                  @input = STDIN.gets.chomp
 
                   if @input.downcase == 'c' || @input.downcase == 'call'
                     call_bet
@@ -194,6 +220,8 @@ class Poker
                     fold_hand
                     @active_players.rotate!
                     break
+                  else
+                    puts 'Please enter a valid input.'
                   end
                 end
                 break
@@ -224,17 +252,20 @@ class Poker
     @active_players[0].folded = true
     pot_adjustment
     @active_players[0].current_bet = 0
+    system "clear"
     puts 'You have folded your hand.'
+    sleep(3)
   end
 
   def all_in
     loop do
       puts 'You are about to go all in, are you sure? Enter (Y)es to proceed.'
-      @input = gets.chomp
+      @input = STDIN.gets.chomp
       if @input.downcase == 'y' || @input.downcase == 'yes'
         @active_players[0].current_bet = @active_players[0].chip_stack
         chip_adjustment
-        puts 'You have gone all in.'
+        puts 'You have gone all in! Good Luck!'
+        sleep(3)
         break
         # @active_players[0].max_winnings = @pot_size
       else
@@ -245,24 +276,30 @@ class Poker
 
   def call_bet
     if @active_players[0].chip_stack <= @table_current_bet
+      pot_size -= @active_players[0].current_bet
       all_in
     else
+      @pot_size -= @active_players[0].current_bet
       @active_players[0].current_bet = @table_current_bet
       chip_adjustment
+      system 'clear'
       puts 'You have called the current bet.'
+      sleep(3)
     end
   end
 
   def check_action
     @active_players[0].acted = true
+    system 'clear'
     puts 'You have checked.'
+    sleep(3)
   end
 
   def raise_bet
     loop do
       puts 'How much would you like to raise? Or enter (B)ack to change your mind.'
 
-      @input_string = gets.chomp
+      @input_string = STDIN.gets.chomp
       @input = begin
                  Integer(@input_string)
                rescue StandardError
@@ -271,10 +308,15 @@ class Poker
 
       if @input && @input >= @table_current_bet * 2
         if @active_players[0].chip_stack <= @input
+          @pot_size -= @active_players[0].current_bet
           all_in
         else
+          @pot_size -= @active_players[0].current_bet
           @active_players[0].current_bet = @input
           chip_adjustment
+          system "clear"
+          puts "You have raised the bet to #{@active_players[0].current_bet} chips."
+          sleep(3)
         end
         @input_string = nil
         break
@@ -286,6 +328,7 @@ class Poker
         puts 'Please enter a valid, whole number'
       end
     end
+    
   end
 
   def best_hand
@@ -309,53 +352,49 @@ class Poker
 
       player.strongest_hand = @best_hand
       puts "#{player.player_name} has #{player.strongest_hand}"
+      sleep(1)
     end
   end
 
-    # Defines a method for launching the homescreen of the application.
-    def home_screen
-      puts "Welcome to Texas Hold 'Em Simulator!"
-      play_poker if gets.chomp == 'play'
-    end
+  # Defines a method for initializing an instance of the Deck class.
+  def init_deck
+    @deck = Deck.new
+  end
 
-    # Defines a method for initializing an instance of the Deck class.
-    def init_deck
-      @deck = Deck.new
+  # Defines a method for dealing cards to each player.
+  def deal_hole_cards
+    # Initiates a loop, iterating over each player within the active players array.
+    @active_players.map do |player|
+      # Removes any persistent cards from the player's hands.
+      player.hole_cards.clear
     end
-
-    # Defines a method for dealing cards to each player.
-    def deal_hole_cards
-      # Initiates a loop, iterating over each player within the active players array.
+    # Initiates a loop that will repeat twice.
+    2.times do
+      # Initiates a loop, iterating over each player with the active players array.
       @active_players.map do |player|
-        # Removes any persistent cards from the player's hands.
-        player.hole_cards.clear
-      end
-      # Initiates a loop that will repeat twice.
-      2.times do
-        # Initiates a loop, iterating over each player with the active players array.
-        @active_players.map do |player|
-          # Moves a card from the top of the deckto the current player's hand.
-          player.hole_cards.push(@deck.cards.shift)
-        end
+        # Moves a card from the top of the deckto the current player's hand.
+        player.hole_cards.push(@deck.cards.shift)
       end
     end
+  end
 
-    # Defines a method for dealing three cards from the top of the deck to the community table cards.
-    def deal_flop
-      # Burns the top card of the deck.
-      @deck.cards.shift
-      # Moves the top three cards of the deck into the community table cards array.
-      @community_cards = @deck.cards.shift(3)
-    end
+  # Defines a method for dealing three cards from the top of the deck to the community table cards.
+  def deal_flop
+    # Burns the top card of the deck.
+    @deck.cards.shift
+    # Moves the top three cards of the deck into the community table cards array.
+    @community_cards = @deck.cards.shift(3)
+    "The community cards are now: #{@community_cards.join(', ')}."
+  end
 
-    # Defines a method for dealing a single card from the top of the deck to the comunity table cards.
-    def deal_post_flop
-      # Burns the top card of the deck.
-      @deck.cards.shift
-      # Moves the top card of the deck into the community table cards array.
-      @community_cards.push(@deck.cards.shift)
-    end
+  # Defines a method for dealing a single card from the top of the deck to the comunity table cards.
+  def deal_post_flop
+    # Burns the top card of the deck.
+    @deck.cards.shift
+    # Moves the top card of the deck into the community table cards array.
+    @community_cards.push(@deck.cards.shift)
+    "The community cards are now: #{@community_cards.join(', ')}."
+  end
 
-    def player_action; end
+  def player_action; end
 end
-

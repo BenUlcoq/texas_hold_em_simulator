@@ -17,3 +17,5 @@ gem 'tty-spinner', '~> 0.9.1'
 gem 'test-unit', '~> 3.3'
 
 gem 'random_data', '~> 1.6'
+
+gem "launchy", "~> 2.4"
