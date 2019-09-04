@@ -4,10 +4,12 @@ require 'test/unit'
 require_relative 'poker'
 
 class PokerTest < Test::Unit::TestCase
+  
+  attr_accessor :poker
   # Create a new Customer and check if it's first_name is correct.
 
   def setup
-    @poker = Poker.new(8, 'Ben Ulcoq', 'Robert Downey')
+    @poker = Poker.new(2, 'Ben Ulcoq', 'Santiago Chamon')
   end
 
   #   def test_players
@@ -49,8 +51,12 @@ class PokerTest < Test::Unit::TestCase
   #   assert_equal(true, @poker.active_players[0].strongest_hand > @poker.active_players[1].strongest_hand)
   # end
 
-  def test_chip_win
-    assert_equal(true, @poker.active_players[0].chip_stack > 5000)
+  # def test_chip_win
+  #   assert_equal(true, @poker.active_players[0].chip_stack > 5000)
+  # end
+
+  def test_tester
+    assert_equal(true, @poker.active_players[0])
   end
   
   
