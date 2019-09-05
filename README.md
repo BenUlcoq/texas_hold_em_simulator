@@ -41,6 +41,9 @@ The engine then restarts and loops until a winner is determined or there is only
 
 #### User Experience and Interaction Design
 
+User Flow Diagram:
+https://raw.githubusercontent.com/BenUlcoq/texas_hold_em_simulator/master/docs/Texas%20Hold%20Em%20User%20Flow%20Final.png
+
 When the application is launched, the user is greeted with a home screen from which they can exit, read the rules of the game or start playing. Depending on the user’s selection, a new screen will be displayed.
 Whenever the user has the ability to input a command into the application, a prompt indicating to the user that they are expected to interact with application will be displayed. All interactions will be via keyboard input, and the message will also let the user know of each of the options available to them at any given time to ensure navigation and interaction with the program is clear and user-friendly.
 
