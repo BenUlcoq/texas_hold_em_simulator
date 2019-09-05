@@ -207,9 +207,6 @@ end
 
 # Defines a method for dealing three cards from the top of the deck to the community table cards.
 def deal_flop
-  p @player_positions
-  p @active_players
-  STDIN.gets.chomp
   # Burns the top card of the deck.
   @deck.cards.shift
   # Moves the top three cards of the deck into the community table cards array.
@@ -591,6 +588,7 @@ def payout
       puts "#{@active_players[0].player_name} now has #{@active_players[0].chip_stack} chips."
     end
   end
+  sleep(5)
 end
 
 # The End!

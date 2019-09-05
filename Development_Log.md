@@ -45,7 +45,12 @@ Adaptations and Deviations: No deviations to report.
 With the application and code structure for the flow control of the application nearing finalisation, development focus turned towards improving the user experience with a more attractive UI and functions relating to output. As the program is relatively simple, the output is extremely fast and snappy. Normally this would be ideal, but given the constraints of a having a multiplayer game running on a single computer, adding slight delays to output and progression allows the user time to absorb any necessary information. Although this functionality isn't perfect, it is an acceptable workaround given the time constraints of the project.
 
 ##  Texas Hold ‘Em Simulator Development Update #7 (05/19) - Code Review
+Date and Time: September 5th 2019 - 5:00pm
+Timeframe: Overdue
+Adaptations and Deviations: Minor interface adjustments and code restructuring.
+
+With the application finished, testing and code review was next on the agenda. After some more rigorous testing a number of issues that had not been apparent in earlier iterations became obvious. The largest issue was that multiple hands of poker couldn't actually be played. It was assumed that the loop was working correctly and subsequent hands would behave in the same way as the first, but it was not originally tested. This complication, along with a few other more minor issues, were ironed out during review. Once the testing and troubleshooting was finished, the code was refactored for efficiency and readability. Comprehensive comments have been writted and applied to the codebase.
 
 
-##  Texas Hold ‘Em Simulator Development Update #8 (05/19) - Documentation and Finalisation
+##  Texas Hold ‘Em Simulator Development Update #8 (06/19) - Documentation, Finalisation and Presentation
 
