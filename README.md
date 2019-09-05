@@ -1,5 +1,4 @@
 # Terminal Application - Multiplayer Texas Hold ‘ Em Simulator
-Source Code Link
 Created by Ben Ulcoq for Coder Academy’s FastTrack Bootcamp Term One Assignment Two.
 
 # Purpose and Scope
