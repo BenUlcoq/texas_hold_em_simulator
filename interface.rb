@@ -4,7 +4,6 @@
 # require_relative 'main'
 require 'launchy'
 require 'colorize'
-require 'tty-spinner'
 require 'artii'
 # require_relative 'poker'
 
@@ -42,7 +41,7 @@ class Interface
     puts @artii.asciify("Texas    Hold    'Em").light_red
     puts @artii2.asciify('      Simulator').light_yellow
     puts '-----------------------------------------------------------------------------'.light_red
-    puts "  Weclome to Texas Hold 'Em Simulator! Please select an option to continue."
+    puts "  Welcome to Texas Hold 'Em Simulator! Please select an option to continue."
     puts ''
     puts '                   To start playing poker, enter (P)lay.'
     puts '        To read the rules of poker, enter (R)ules. Opens in browser.'
@@ -100,7 +99,10 @@ class Interface
     sleep(2)
   end
 
-  def card_output(card)
+  def card_output(cards)
+
+    cards.each do |card|
+
       case true
       when card.downcase.include?("h") 
         print " #{card.chars[0]} of Hearts ".light_red.on_light_white
@@ -116,6 +118,8 @@ class Interface
         # print "#{card}".light_black.on_light_white
       else
       end
+      print " and the " unless card == cards.last
+    end
   end
 
 end

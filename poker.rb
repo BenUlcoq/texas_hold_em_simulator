@@ -1,19 +1,28 @@
 # frozen_string_literal: true
 
-# Import Ruby Gem: Random Data
+# Import Ruby Gems and necessary classes
 require 'random_data'
 require_relative 'deck'
 require_relative 'player'
 require_relative 'interface'
 require 'ruby-poker'
 require 'colorize'
+require 'tty-spinner'
 
 class Poker
   attr_reader :player_positions, :deck, :community_cards, :active_players, :pot_size
   attr_accessor :table_current_bet
 
-  # Passes the player details supplied to the @player_positions array upon initialization.
+  
   def initialize(number_of_players, args)
+    # Initializes an instance of the TTY Spinner class and stores it to a variable.
+    @spinner = TTY::Spinner.new('Awaiting Input [:spinner]', format: :arrow_pulse)
+    # Initializes an integer for tracking the number of hands that have been played.
+    @hands_played = 0
+    # Initializes an instance of the Interface class and stores it to a variable.
+    @interface = Interface.new
+
+    # Passes the player details supplied via CLI to the @player_positions array upon initialization.
     @player_positions = args + Array.new(number_of_players - args.length)
     # Loops through the @player_positions array.
     @player_positions.map! do |name|
@@ -26,26 +35,31 @@ class Poker
         Player.new("#{Random.firstname} #{Random.lastname}")
       end
     end
-
-    @hands_played = 0
-    @interface = Interface.new
+    # Calls the run_home_screen method.
     run_home_screen
-    
   end
 
+  # Defines a method
   def run_home_screen
     @interface.home_screen
+    @spinner.auto_spin
     loop do
       @input = STDIN.gets.chomp
       if @input.downcase == 'p' || @input.downcase == 'play'
+        @spinner.success('Launching Game..')
+        sleep(1)
         @game_running = true
         play_poker
         break
       elsif @input.downcase == 'r' || @input.downcase == 'rules'
+        @spinner.success('Opening Rules..')
+        sleep(1)
         @interface.poker_rules
         run_home_screen
         break
       elsif @input.downcase == 'q' || @input.downcase == 'quit'
+        @spinner.success('See you next time!')
+        sleep(1)
         break
       else
         puts 'Please enter a valid command!'
@@ -56,6 +70,9 @@ class Poker
 
   # Defines a method containing the flow control for a hand of poker.
   def play_poker
+    @player_positions.map do |player|
+      @player_positions.delete(player) if player.chip_stack.zero?
+    end
     @big_blind_value = 50
     @small_blind_value = 25
     @pot_size = 0
@@ -78,7 +95,7 @@ class Poker
       else
         break
       end
-    
+
     end
   end
 
@@ -124,31 +141,36 @@ class Poker
   end
 
   def new_hand_check
-    puts "Are you ready to play? Enter " + "(Y)es".light_green + " to proceed or " + "(N)o".light_red + " to return to the main menu."
-      @input = STDIN.gets.chomp
-      if @input.downcase == 'y' || @input.downcase == 'yes'
-        @game_running = true
-      elsif @input.downcase == 'n' || @input.downcase == 'no'
-        @game_running = false
-        run_home_screen
-      else
-        puts 'Please enter a valid input.'
-        new_hand_check
-      end
+    puts 'Are you ready to play? Enter ' + '(Y)es'.light_green + ' to proceed or ' + '(N)o'.light_red + ' to return to the main menu.'
+    @spinner.auto_spin
+    @input = STDIN.gets.chomp
+    if @input.downcase == 'y' || @input.downcase == 'yes'
+      @game_running = true
+      @spinner.success('Commencing next hand..')
+      sleep(1)
+    elsif @input.downcase == 'n' || @input.downcase == 'no'
+      @game_running = false
+      @spinner.success('Returning home..')
+      sleep(1)
+      run_home_screen
+    else
+      puts 'Please enter a valid input.'
+      new_hand_check
+    end
   end
 
   def deal_community_cards
     if @stage_of_play == 1
       puts 'The flop is now being being dealt.'
-      sleep(2)
+      sleep(1)
       deal_flop
     elsif @stage_of_play == 2 && @community_cards.length != 4
       puts 'The turn is now being being dealt.'
-      sleep(2)
+      sleep(1)
       deal_post_flop
     elsif @stage_of_play == 3 && @community_cards.length != 5
       puts 'The river is now being dealt.'
-      sleep(2)
+      sleep(1)
       deal_post_flop
     end
   end
@@ -161,6 +183,7 @@ class Poker
       set_blinds
 
       while @active_players.length > 1 && @stage_of_play < 4
+
         deal_community_cards
 
         loop do
@@ -168,7 +191,18 @@ class Poker
             @active_players.delete(player) if player.folded == true
           end
 
-          if @active_players[0].acted == true && @active_players[0].current_bet == @table_current_bet
+          @active_players.map do |player|
+            if player.chip_stack == 0 && player.max_pot != 0
+              player.max_winnings = (player.max_winnings * @active_players.length) + player.max_pot
+              player.max_pot = 0
+            end
+          end
+
+          if @active_players[0].acted == true && @active_players[0].chip_stack.zero?
+            @active_players.rotate!
+
+          elsif (@active_players[0].acted == true) && (@active_players[0].current_bet == @table_current_bet)
+
             @stage_of_play += 1
             @active_players.map do |player|
               if player.current_bet == @table_current_bet
@@ -176,11 +210,10 @@ class Poker
               end
               player.current_bet = 0
             end
+
             @table_current_bet = 0
             break
 
-          elsif @active_players[0].acted == true && @active_players[0].chip_stack.zero?
-            @active_players[0].rotate!
           else
 
             @interface.ready_check(@active_players[0])
@@ -217,16 +250,24 @@ def fold_hand
 end
 
 def all_in
+  puts 'You are about to go all in, are you sure? Enter ' + '(Y)es'.light_green + ' to proceed or ' + '(N)o'.light_red + ' to go back.'
   loop do
-    puts 'You are about to go all in, are you sure? Enter (Y)es to proceed.'
     @input = STDIN.gets.chomp
     if @input.downcase == 'y' || @input.downcase == 'yes'
+      @spinner.success('Going all in!')
+      sleep(1)
       @active_players[0].current_bet = @active_players[0].chip_stack
+      @active_players[0].max_winnings = @active_players[0].current_bet
+      @active_players[0].max_pot = @pot_size
       chip_adjustment
+      system 'clear'
       puts 'You have gone all in! Good Luck!'
       sleep(3)
       break
-      # @active_players[0].max_winnings = @pot_size
+
+    elsif @input.downcase == 'n' || @input.downcase == 'no'
+      raise_bet
+      break
     else
       puts 'Response not clear enough.'
     end
@@ -254,10 +295,10 @@ def check_action
 end
 
 def raise_bet
+  puts 'How much would you like to raise? Or enter (B)ack to change your mind.'
   loop do
-    puts 'How much would you like to raise? Or enter (B)ack to change your mind.'
-
     @input_string = STDIN.gets.chomp
+
     @input = begin
                Integer(@input_string)
              rescue StandardError
@@ -267,10 +308,9 @@ def raise_bet
     if @input && @input >= @table_current_bet * 2
       @pot_size -= @active_players[0].current_bet
       if @active_players[0].chip_stack <= @input
-        
         all_in
       else
-        
+        @spinner.success('Raising the bet..')
         @active_players[0].current_bet = @input
         chip_adjustment
         system 'clear'
@@ -342,7 +382,11 @@ def deal_flop
   @deck.cards.shift
   # Moves the top three cards of the deck into the community table cards array.
   @community_cards = @deck.cards.shift(3)
-  "The community cards are now: #{@community_cards.join(', ')}."
+  puts ''
+  print 'The flop is: '
+
+  @interface.card_output(@community_cards)
+  sleep(3)
 end
 
 # Defines a method for dealing a single card from the top of the deck to the comunity table cards.
@@ -351,45 +395,53 @@ def deal_post_flop
   @deck.cards.shift
   # Moves the top card of the deck into the community table cards array.
   @community_cards.push(@deck.cards.shift)
-  "The community cards are now: #{@community_cards.join(', ')}."
+  print 'The community cards are: '
+  @interface.card_output(@community_cards)
+  sleep(3)
 end
 
 def player_action
+  @spinner.auto_spin
   loop do
     @input = STDIN.gets.chomp
 
     if @input.downcase == 'y' || @input.downcase == 'yes'
+      @spinner.success('')
       @interface.player_info(@active_players[0], @pot_size)
       @interface.current_info(@active_players, @table_current_bet)
 
       if @stage_of_play.positive?
-        puts "The current community cards are #{@community_cards.join(' ')}"
+        print 'The current community cards are '
+        @interface.card_output(@community_cards)
+        puts ''
       end
-      puts ""
-      print "You have the "
-      @active_players[0].hole_cards.each do |card|
-        @interface.card_output(card)
-        print " and the " unless card == @active_players[0].hole_cards.last
-      end
+      puts ''
+      print 'You have the '
+      @interface.card_output(@active_players[0].hole_cards)
 
-      puts ""
-      puts ""
+      puts ''
+      puts ''
 
       puts 'What you you like to do?'
-      if @active_players[0].acted == true && @active_players[0].current_bet == @table_current_bet
+      if @active_players[0].acted == true && @active_players[0].current_bet == @table_current_bet && @active_players[0].current_bet.positive?
         break
 
       elsif @active_players[0].current_bet == @table_current_bet
+        puts 'You can ' + '(C)heck'.light_yellow + ' or ' + '(R)aise.'.light_green
+        @spinner.auto_spin
         loop do
-          puts "You can " + "(C)heck".light_yellow + " or " + "(R)aise.".light_green
           @input = STDIN.gets.chomp
 
           if @input.downcase == 'c' || @input.downcase == 'check'
+            @spinner.success('Checking..')
+            sleep(1)
             check_action
             @active_players.rotate!
             break
 
           elsif @input.downcase == 'r' || @input.downcase == 'raise'
+            @spinner.success('Raising..')
+            sleep(1)
             raise_bet
             unless @input_string
               @active_players.rotate!
@@ -401,21 +453,28 @@ def player_action
         end
         break
       elsif @active_players[0].current_bet < @table_current_bet
+        puts 'You can ' + '(C)all, '.light_yellow + '(R)aise,'.light_green + ' or ' + '(F)old.'.light_red
+        @spinner.auto_spin
         loop do
-          puts "You can " + "(C)all, ".light_yellow + "(R)aise,".light_green + " or " + "(F)old.".light_red
           @input = STDIN.gets.chomp
 
           if @input.downcase == 'c' || @input.downcase == 'call'
+            @spinner.success('Calling..')
+            sleep(1)
             call_bet
             @active_players.rotate!
             break
           elsif @input.downcase == 'r' || @input.downcase == 'raise'
+            @spinner.success('Raising..')
+            sleep(1)
             raise_bet
             unless @input_string
               @active_players.rotate!
               break
             end
           elsif @input.downcase == 'f' || @input.downcase == 'fold'
+            @spinner.success('Folding..')
+            sleep(1)
             fold_hand
             @active_players.rotate!
             break
@@ -425,7 +484,7 @@ def player_action
         end
         break
       end
-  else
+    else
       puts "That's okay - no rush!"
     end
   end
