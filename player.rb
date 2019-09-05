@@ -11,15 +11,17 @@ class Player
     @hole_cards = []
     # Creates a boolean variable used for checking whether a players hand has been folded.
     @folded = false
-    # Initialises an integer variable used for tracking the number of chips the player has.
+    # Initializes an integer variable used for tracking the number of chips the player has.
     @chip_stack = 5000
-    # Initialises an integer variable used for tracking the amount the player has currently bet.
+    # Initializes an integer variable used for tracking the amount the player has currently bet.
     @current_bet = 0
+    # Initializes an integer variable used for tracking the maximum amount a player can win when they go all in.
     @max_winnings = 0
+    # Initializes an integer variable used for calculating the maximum amount a player can win when they go all in.
     @max_pot = 0
+    # Creates a boolean variable used for checking whether a player has performed an action in a round of betting.
     @acted = false
+    # Generates an empty array which will store the player's strongest 5 card hand when calculated.
     @strongest_hand = []
   end
-
-  
 end

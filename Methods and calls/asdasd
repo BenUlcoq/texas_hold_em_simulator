@@ -1,8 +1,0 @@
-[#<Player:0x00007fe484993430 @player_name="Michelle Miller", @hole_cards=["9S", "5D"], @folded=true, @chip_stack=4975, @current_bet=0, @max_winnings=0, @max_pot=0, @acted=false, @strongest_hand=[]>, 
-#<Player:0x00007fe4849932f0 @player_name="Anna Jackson", @hole_cards=["9H", "TC"], @folded=false, @chip_stack=4800, @current_bet=0, @max_winnings=0, @max_pot=0, @acted=false, @strongest_hand=[]>, 
-#<Player:0x00007fe4849931b0 @player_name="Thomas Davidson", @hole_cards=["9C", "6C"], @folded=false, @chip_stack=4700, @current_bet=0, @max_winnings=0, @max_pot=0, @acted=false, @strongest_hand=[]>, 
-#<Player:0x00007fe484993048 @player_name="Judith Anthony", @hole_cards=["JS", "JH"], @folded=false, @chip_stack=4800, @current_bet=0, @max_winnings=0, @max_pot=0, @acted=false, @strongest_hand=[]>]
-
-[#<Player:0x00007fe484993048 @player_name="Judith Anthony", @hole_cards=["JS", "JH"], @folded=false, @chip_stack=4800, @current_bet=0, @max_winnings=0, @max_pot=0, @acted=false, @strongest_hand=[]>,
- #<Player:0x00007fe4849932f0 @player_name="Anna Jackson", @hole_cards=["9H", "TC"], @folded=false, @chip_stack=4800, @current_bet=0, @max_winnings=0, @max_pot=0, @acted=false, @strongest_hand=[]>, 
- #<Player:0x00007fe4849931b0 @player_name="Thomas Davidson", @hole_cards=["9C", "6C"], @folded=false, @chip_stack=4700, @current_bet=0, @max_winnings=0, @max_pot=0, @acted=false, @strongest_hand=[]>]

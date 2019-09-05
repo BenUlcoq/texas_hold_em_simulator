@@ -14,7 +14,6 @@ class Poker
 
   def initialize(number_of_players, args)
     @hand_played = false
-    @interface = Interface.new
     @big_blind_value = 50
     @small_blind_value = 25
     @pot_size = 0
@@ -77,7 +76,7 @@ class Poker
   # Runs the main flow control of a hand of poker.
   def poker_hand
     # If a hand hasn't been played yet, display a welcome message with some key information.
-    @interface.welcome_message(@player_positions) unless @hand_played
+    welcome_message(@player_positions) unless @hand_played
 
     # Do the players want to start a new hand?
     new_hand_check
@@ -120,7 +119,7 @@ class Poker
             # If a player is still active and has no chips left, they are all in.
             @all_in_players = 0
             @active_players.map do |player|
-              @all_in_players += 1 if player.chip_stack == 0
+              @all_in_players += 1 if player.chip_stack.zero?
             end
 
             # If the player is all in and there are players who aren't all in rotate the array to check the next player.
@@ -143,7 +142,7 @@ class Poker
 
             else
               # If all of the above conditions fail, it means the player needs to make a move.
-              @interface.ready_check(@active_players[0])
+              ready_check(@active_players[0])
               player_action
             end
           end
@@ -217,7 +216,7 @@ def deal_flop
   @community_cards = @deck.cards.shift(3)
   puts ''
   print 'The flop is: '
-  @interface.card_output(@community_cards)
+  card_output(@community_cards)
   sleep(3)
 end
 
@@ -228,7 +227,7 @@ def deal_post_flop
   # Moves the top card of the deck into the community table cards array.
   @community_cards.push(@deck.cards.shift)
   print 'The community cards are: '
-  @interface.card_output(@community_cards)
+  card_output(@community_cards)
   sleep(3)
 end
 
@@ -316,7 +315,7 @@ end
 
 # Defines a method for displaying the home screen and retreiving input related to the homescreen options.
 def run_home_screen
-  @interface.home_screen
+  home_screen
 
   # Loop that will receive user input and check whether it is valid.
   loop do
@@ -326,7 +325,7 @@ def run_home_screen
       play_poker
       break
     elsif @input.downcase == 'r' || @input.downcase == 'rules'
-      @interface.poker_rules
+      poker_rules
       run_home_screen
       break
     elsif @input.downcase == 'q' || @input.downcase == 'quit'
@@ -346,19 +345,19 @@ def player_action
     if @input.downcase == 'y' || @input.downcase == 'yes'
 
       # Outputs all of the necessary information for the user.
-      @interface.player_info(@active_players[0], @pot_size)
-      @interface.current_info(@active_players, @table_current_bet)
+      player_info(@active_players[0], @pot_size)
+      current_info(@active_players, @table_current_bet)
 
       # If community cards have been dealt yet, output them for the user in a nice format.
       if @stage_of_play.positive?
         print 'The current community cards are '
-        @interface.card_output(@community_cards)
+        card_output(@community_cards)
         puts ''
       end
       puts ''
       print 'You have the '
       # Outputs the user's hole cards in a nice format.
-      @interface.card_output(@active_players[0].hole_cards)
+      card_output(@active_players[0].hole_cards)
 
       puts ''
       puts ''
