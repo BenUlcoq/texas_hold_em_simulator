@@ -101,22 +101,21 @@ class Interface
 
     cards.each do |card|
 
-      case true
-      when card.downcase.include?("h") 
+      if card.downcase.include?("h") 
         print " #{card.chars[0]} of Hearts ".light_red.on_light_white
         # print "#{card}".light_red.on_light_white
-      when card.downcase.include?("c")
+      elsif card.downcase.include?("c")
         print " #{card.chars[0]} of Clubs ".black.on_light_white
         # print "#{card}".black.on_light_white
-      when card.downcase.include?("d")
+      elsif card.downcase.include?("d")
         print " #{card.chars[0]} of Diamonds ".red.on_light_white
         # print "#{card}".red.on_light_white
-      when card.downcase.include?("s")
+      elsif card.downcase.include?("s")
         print " #{card.chars[0]} of Spades ".light_black.on_light_white
         # print "#{card}".light_black.on_light_white
-      else
       end
       print " and the " unless card == cards.last
+      
     end
   end
 
