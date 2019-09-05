@@ -80,7 +80,7 @@ class Poker
     @table_current_bet = 0
     @stage_of_play = 0
     @active_players = @player_positions.dup
-    @active_players[0].chip_stack = 10000
+    # @active_players[0].chip_stack = 10000
     init_deck
     deal_hole_cards
     while @game_running == true
