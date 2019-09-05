@@ -2,7 +2,7 @@
 
 class Player
   attr_reader :player_name
-  attr_accessor :hole_cards, :folded, :chip_stack, :current_bet, :max_winnings, :strongest_hand, :acted, :pretty_cards, :max_pot
+  attr_accessor :hole_cards, :folded, :chip_stack, :current_bet, :max_winnings, :strongest_hand, :acted, :max_pot
 
   def initialize(name)
     # Stores the name value passed to the instance initialisation into an instance variable @player_name.
