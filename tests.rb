@@ -55,10 +55,4 @@ class PokerTest < Test::Unit::TestCase
   #   assert_equal(true, @poker.active_players[0].chip_stack > 5000)
   # end
 
-  def test_tester
-    assert_equal(true, @poker.active_players[0])
-  end
-  
-  
-
 end

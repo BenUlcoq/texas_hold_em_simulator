@@ -76,9 +76,11 @@ class Poker
     @big_blind_value = 50
     @small_blind_value = 25
     @pot_size = 0
+    @committed = 0
     @table_current_bet = 0
     @stage_of_play = 0
     @active_players = @player_positions.dup
+    @active_players[0].chip_stack = 10000
     init_deck
     deal_hole_cards
     while @game_running == true
@@ -137,6 +139,7 @@ class Poker
     @active_players[1].current_bet = @big_blind_value
     @table_current_bet = @active_players[1].current_bet
     @pot_size += @active_players[0].current_bet + @active_players[1].current_bet
+    @committed += @pot_size
     @active_players.rotate!(2)
   end
 
@@ -183,27 +186,42 @@ class Poker
       set_blinds
 
       while @active_players.length > 1 && @stage_of_play < 4
-
+        
         deal_community_cards
 
+        @active_players.map do |player|
+        if player.chip_stack == 0 && player.max_pot != 0
+              player.max_winnings = (@pot_size - @committed) + (player.max_pot * @active_players.length)
+              puts player.max_winnings
+              sleep(3)
+              player.max_pot = 0
+        end
+      end
+      if @stage_of_play.positive?
+        @committed = 0
+      end
+
+
         loop do
+
           @active_players.map do |player|
             @active_players.delete(player) if player.folded == true
           end
 
+          @all_in_players = 0
           @active_players.map do |player|
-            if player.chip_stack == 0 && player.max_pot != 0
-              player.max_winnings = (player.max_winnings * @active_players.length) + player.max_pot
-              player.max_pot = 0
-            end
+            
+            
           end
 
-          if @active_players[0].acted == true && @active_players[0].chip_stack.zero?
+
+          if @active_players[0].acted == true && @active_players[0].chip_stack.zero? && @active_players.length != @all_in_players
             @active_players.rotate!
 
-          elsif (@active_players[0].acted == true) && (@active_players[0].current_bet == @table_current_bet)
 
+          elsif (@active_players[0].acted == true) && (@active_players[0].current_bet == @table_current_bet)
             @stage_of_play += 1
+
             @active_players.map do |player|
               if player.current_bet == @table_current_bet
                 player.acted = false unless player.chip_stack.zero?
@@ -217,6 +235,7 @@ class Poker
           else
 
             @interface.ready_check(@active_players[0])
+            
 
             player_action
 
@@ -231,6 +250,7 @@ end
 
 def pot_adjustment
   @pot_size += @active_players[0].current_bet
+  @committed += @active_players[0].current_bet
   @active_players[0].chip_stack -= @active_players[0].current_bet
   @active_players[0].acted = true
 end
@@ -257,8 +277,7 @@ def all_in
       @spinner.success('Going all in!')
       sleep(1)
       @active_players[0].current_bet = @active_players[0].chip_stack
-      @active_players[0].max_winnings = @active_players[0].current_bet
-      @active_players[0].max_pot = @pot_size
+      @active_players[0].max_pot = @active_players[0].current_bet
       chip_adjustment
       system 'clear'
       puts 'You have gone all in! Good Luck!'
@@ -276,6 +295,7 @@ end
 
 def call_bet
   @pot_size -= @active_players[0].current_bet
+  @committed -= @active_players[0].current_bet
   if @active_players[0].chip_stack <= @table_current_bet
     all_in
   else
@@ -307,6 +327,7 @@ def raise_bet
 
     if @input && @input >= @table_current_bet * 2
       @pot_size -= @active_players[0].current_bet
+      @committed -= @active_players[0].current_bet
       if @active_players[0].chip_stack <= @input
         all_in
       else
