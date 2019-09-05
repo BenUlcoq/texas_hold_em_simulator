@@ -73,29 +73,29 @@ class Poker
     run_home_screen
   end
 
-  # Runs the main flow control of a hand of poker.
-  def poker_hand
-    # If a hand hasn't been played yet, display a welcome message with some key information.
-    welcome_message(@player_positions) unless @hand_played
+    # Runs the main flow control of a hand of poker.
+    def poker_hand
+      # If a hand hasn't been played yet, display a welcome message with some key information.
+      welcome_message(@player_positions) unless @hand_played
 
-    # Do the players want to start a new hand?
-    new_hand_check
+      # Do the players want to start a new hand?
+      new_hand_check
 
-    # If they do, let's play!
-    if @game_running
+      # If they do, let's play!
+      if @game_running
 
-      # Resets and reinitializes everything required for the start of a new hand.
-      zero_chips
-      reset_values
-      set_blinds
-      init_deck
-      deal_hole_cards
-      system 'clear'
-      puts 'Dealing the cards..'
-      sleep(2)
+        # Resets and reinitializes everything required for the start of a new hand.
+        zero_chips
+        reset_values
+        set_blinds
+        init_deck
+        deal_hole_cards
+        system 'clear'
+        puts 'Dealing the cards..'
+        sleep(2)
 
       # Starts a loop that checks to see whether a winner needs to be determined.
-      while @active_players.length > 1 && @stage_of_play < 4
+        while @active_players.length > 1 && @stage_of_play < 4
           # Each time it loops back to this point means we've progressed to the next stage of play and cards need to be dealt.
           deal_community_cards
 
