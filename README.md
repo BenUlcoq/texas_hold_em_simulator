@@ -95,12 +95,12 @@ The initially conceived structure for this particular application was made up of
 * `@max_winnings` an integer used to track the maximum amount of chips a player can win in any given hand.
 * `@player_name` a string containing the player’s name, passed via command line argument when running the application.
 
-### Initial Ruby Gems
-Colorize
-Ruby Poker
-Artii
-TTY Spinner
-
+### Ruby Gems
+Colorize used for UI improvement in the form of coloured text.
+Ruby Poker used for hand strength comparison.
+Artii used for word art.
+Random Data used to generate random names when not supplied.
+Launchy used for opening external windows and links.
 
 ## Deviation from the Implementation Plan and Agile Development
 During the development process, a number of issues were encountered regarding viability, efficiency and complexity of the code structure that needed to be addressed.
@@ -124,6 +124,19 @@ As outlined above, the development technique strayed slightly from the test driv
 
 
 ## Instructions for Use
+Follow these instructions to download and install Ruby on your computer.
+Download and unzip the files on your local computer.
+On the terminal command line, navigate to the src folder. Install the bundler gem (if you haven't already)
+> install bundler
+Ask bundle to install the gems that we use for the program.
+> bundle install 
+In the terminal command line, navigate to the src folder by inputting the command
+> cd src 
+Input the below command in the terminal command line.
+> ruby main.rb
+If you get an error message like below asking you to update your bundler, input the below in terminal command line. alt_text
+> gem update --system
+Run program using step 6 again.
 
 ## Accessibility
 Given the simple nature of the application, there was very little room for accessibility to be an issue. However, it is still an important aspect to consider when planning the development of any application. The WCAG 2.1 ‘Guidelines at a Glance’  provides an overview of the ways in which applications should be made accessible for all users.

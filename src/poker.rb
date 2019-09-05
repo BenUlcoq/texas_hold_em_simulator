@@ -2,11 +2,11 @@
 
 # Import Ruby Gems and necessary classes
 require 'random_data'
+require 'ruby-poker'
+require 'colorize'
 require_relative 'deck'
 require_relative 'player'
 require_relative 'interface'
-require 'ruby-poker'
-require 'colorize'
 
 class Poker
   attr_reader :player_positions, :deck, :community_cards, :active_players, :pot_size
