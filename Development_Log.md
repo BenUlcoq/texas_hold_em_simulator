@@ -37,13 +37,15 @@ Adaptations and Deviations: A main file has been created for more elegant handli
 
 Further changes have been made to the class structure to allow for cleaner launching of the application for in-depth testing and final functionality purposes. A main.rb file was created that will be used for handling command line arguments and passing them correctly to the poker class. As the application and code structure has become more complex, the inexperience with test driven development has become apparent. Testing parts of the program that are nested deep within the flow control of the code is currently unachievable and will require further research. As a substitue measure, manual testing has been conducted exploring various pathways within the applcation to ensure data handling, logic and error handling is working as expected.
 
-##  Texas Hold ‘Em Simulator Development Update #4 (05/19) - Implementation of Interface Management
+##  Texas Hold ‘Em Simulator Development Update #6 (05/19) - UI/UX Improvements
 Date and Time: September 5th 2019 - 1:00pm
 Timeframe: Documentation Overdue
 Adaptations and Deviations: No deviations to report.
 
+With the application and code structure for the flow control of the application nearing finalisation, development focus turned towards improving the user experience with a more attractive UI and functions relating to output. As the program is relatively simple, the output is extremely fast and snappy. Normally this would be ideal, but given the constraints of a having a multiplayer game running on a single computer, adding slight delays to output and progression allows the user time to absorb any necessary information. Although this functionality isn't perfect, it is an acceptable workaround given the time constraints of the project.
+
+##  Texas Hold ‘Em Simulator Development Update #7 (05/19) - Code Review
 
 
-
-
+##  Texas Hold ‘Em Simulator Development Update #8 (05/19) - Documentation and Finalisation
 

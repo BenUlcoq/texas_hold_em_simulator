@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-# require_relative 'poker'
-# require_relative 'main'
 require 'launchy'
 require 'colorize'
 require 'artii'
-# require_relative 'poker'
+
 
 class Interface
   # Defines a method for launching the homescreen of the application.
