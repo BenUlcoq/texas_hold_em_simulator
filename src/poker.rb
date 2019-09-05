@@ -66,9 +66,6 @@ class Poker
 
     end
 
-    # Still playing? Good! Let's go again.
-    play_poker if @game_running
-
     # The game is no longer running - let's head home.
     run_home_screen
   end
