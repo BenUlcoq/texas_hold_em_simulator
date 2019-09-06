@@ -2,7 +2,7 @@
 Created by Ben Ulcoq for Coder Academy’s FastTrack Bootcamp Term One Assignment Two.
 
 ## Instructions for Use
-See the help file!
+See the help file in the docs directory.
 
 # Purpose and Scope
 Texas Hold ‘Em Simulator is a multi user application aimed at providing an environment for players to hone their skills and challenge one another to games of heads-up Texas Hold ‘Em Poker.  The application simulates the flow of a poker game by having users choose what actions to perform within the game (fold, raise, call or check ) when it is their turn. Once the hand being played reaches its conclusion, a winner is determined and the chip counts for each player are adjusted if necessary. 
@@ -47,6 +47,9 @@ The engine then restarts and loops until a winner is determined or there is only
 User Flow Diagram:
 https://raw.githubusercontent.com/BenUlcoq/texas_hold_em_simulator/master/docs/Texas%20Hold%20Em%20User%20Flow%20Final.png
 
+UML Class Diagram
+https://raw.githubusercontent.com/BenUlcoq/texas_hold_em_simulator/master/docs/UML%20Class%20Diagram.png
+
 When the application is launched, the user is greeted with a home screen from which they can exit, read the rules of the game or start playing. Depending on the user’s selection, a new screen will be displayed.
 Whenever the user has the ability to input a command into the application, a prompt indicating to the user that they are expected to interact with application will be displayed. All interactions will be via keyboard input, and the message will also let the user know of each of the options available to them at any given time to ensure navigation and interaction with the program is clear and user-friendly.
 
@@ -65,6 +68,9 @@ Once the application idea was finalised and scoped appropriately, a flow diagram
 From here, the features, functionality and user experience were taken from a concept and blocked out clearly. This provided an excellent foundation for initial planning of the code structure. Test Driven Development techniques were to be observed throughout the development process, and as such the planning needed to reflect this.
 
 In order to ensure that the development of the application ran smoothly, Trello, a project management application was used. Trello allows for individual user stories to be tracked and to have a checklist of goals for each user story, allowing for an easy way to ensure TDD was being used, and effectively solving the problem of time-management given the short timeframe allowed for development. Without Trello, the program could certainly still have been created, but the quality would likely be severely lacking and as such, much harder to build on in the future. The tracking of user stories as an implementation technique allowed for agile development if the initially conceived code structure was found to be ineffective during development.
+
+Initial Trello Board:
+https://raw.githubusercontent.com/BenUlcoq/texas_hold_em_simulator/master/docs/Original%20Trello%20Board.png
 
 ### Initial Code Structure
 The initially conceived structure for this particular application was made up of four key components.  These included:
