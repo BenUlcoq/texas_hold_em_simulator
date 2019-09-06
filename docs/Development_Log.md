@@ -53,4 +53,8 @@ With the application finished, testing and code review was next on the agenda. A
 
 
 ##  Texas Hold ‘Em Simulator Development Update #8 (06/19) - Documentation, Finalisation and Presentation
+Date and Time: September 6th 2019 - 4:00pm
+Timeframe: On Track
+Adaptations and Deviations: No deviations to report.
 
+The application has been completely finalised. Documentation has been completed and tests have been completed. The application was presented to the Coder Academy class, including a brief overview of the code base along with a live demo. Unfortunately the live demo failed in a minor way by throwing an error. However, this was simply caused by an accidental deletion of a line of code previously. Reviewing Github for the change made the issue obvious and the application was restored to working order.
