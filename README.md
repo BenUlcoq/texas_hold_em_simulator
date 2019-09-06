@@ -69,6 +69,9 @@ From here, the features, functionality and user experience were taken from a con
 
 In order to ensure that the development of the application ran smoothly, Trello, a project management application was used. Trello allows for individual user stories to be tracked and to have a checklist of goals for each user story, allowing for an easy way to ensure TDD was being used, and effectively solving the problem of time-management given the short timeframe allowed for development. Without Trello, the program could certainly still have been created, but the quality would likely be severely lacking and as such, much harder to build on in the future. The tracking of user stories as an implementation technique allowed for agile development if the initially conceived code structure was found to be ineffective during development.
 
+Initial Trello Board:
+https://raw.githubusercontent.com/BenUlcoq/texas_hold_em_simulator/master/docs/Original%20Trello%20Board.png
+
 ### Initial Code Structure
 The initially conceived structure for this particular application was made up of four key components.  These included:
 
