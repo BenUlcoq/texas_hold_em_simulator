@@ -72,6 +72,9 @@ In order to ensure that the development of the application ran smoothly, Trello,
 Initial Trello Board:
 https://raw.githubusercontent.com/BenUlcoq/texas_hold_em_simulator/master/docs/Original%20Trello%20Board.png
 
+Link to Trello Board:
+https://trello.com/b/bNtrU7CN/coder-academy-terminal-app
+
 ### Initial Code Structure
 The initially conceived structure for this particular application was made up of four key components.  These included:
 
