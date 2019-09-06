@@ -11,7 +11,6 @@ require_relative 'poker'
                      rescue StandardError
                        10
 end
-
 # If the player has entered incorrect data then an error is outputted.
 # Otherwise, creates an instance of the Poker class.
 if @argv.length > 10 || @number_of_players > 9

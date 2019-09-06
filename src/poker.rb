@@ -70,83 +70,83 @@ class Poker
     run_home_screen
   end
 
-    # Runs the main flow control of a hand of poker.
-    def poker_hand
-      # If a hand hasn't been played yet, display a welcome message with some key information.
-      welcome_message(@player_positions) unless @hand_played
+  # Runs the main flow control of a hand of poker.
+  def poker_hand
+    # If a hand hasn't been played yet, display a welcome message with some key information.
+    welcome_message(@player_positions) unless @hand_played
 
-      # Do the players want to start a new hand?
-      new_hand_check
+    # Do the players want to start a new hand?
+    new_hand_check
 
-      # If they do, let's play!
-      if @game_running
+    # If they do, let's play!
+    if @game_running
 
-        # Resets and reinitializes everything required for the start of a new hand.
-        zero_chips
-        reset_values
-        set_blinds
-        init_deck
-        deal_hole_cards
-        system 'clear'
-        puts 'Dealing the cards..'
-        sleep(2)
+      # Resets and reinitializes everything required for the start of a new hand.
+      zero_chips
+      reset_values
+      set_blinds
+      init_deck
+      deal_hole_cards
+      system 'clear'
+      puts 'Dealing the cards..'
+      sleep(2)
 
       # Starts a loop that checks to see whether a winner needs to be determined.
-        while @active_players.length > 1 && @stage_of_play < 4
-          # Each time it loops back to this point means we've progressed to the next stage of play and cards need to be dealt.
-          deal_community_cards
+      while @active_players.length > 1 && @stage_of_play < 4
+        # Each time it loops back to this point means we've progressed to the next stage of play and cards need to be dealt.
+        deal_community_cards
 
-          # If a player has gone all in in the last round of betting, sets the maximum amount that player can win this hand.
+        # If a player has gone all in in the last round of betting, sets the maximum amount that player can win this hand.
+        @active_players.map do |player|
+          next unless player.chip_stack == 0 && player.max_pot != 0
+
+          player.max_winnings = (@pot_size - @committed) + (player.max_pot * @active_players.length)
+          player.max_pot = 0
+        end
+
+        # Resets the committed value AFTER max_winnings has been calculated.
+        @committed = 0 if @stage_of_play.positive?
+
+        loop do
+          # If a player has folded they are no longer active in this hand.
           @active_players.map do |player|
-            next unless player.chip_stack == 0 && player.max_pot != 0
-
-            player.max_winnings = (@pot_size - @committed) + (player.max_pot * @active_players.length)
-            player.max_pot = 0
+            @active_players.delete(player) if player.folded == true
           end
 
-          # Resets the committed value AFTER max_winnings has been calculated.
-          @committed = 0 if @stage_of_play.positive?
+          # If a player is still active and has no chips left, they are all in.
+          @all_in_players = 0
+          @active_players.map do |player|
+            @all_in_players += 1 if player.chip_stack.zero?
+          end
 
-          loop do
-            # If a player has folded they are no longer active in this hand.
+          # If the player is all in and there are players who aren't all in rotate the array to check the next player.
+          if @active_players[0].acted == true && @active_players[0].chip_stack.zero? && @active_players.length != @all_in_players
+            @active_players.rotate!
+
+          # If the player was the initial raiser and they haven't had their bet raised, move onto the next stage of the hand.
+          elsif (@active_players[0].acted == true) && (@active_players[0].current_bet == @table_current_bet)
+            @stage_of_play += 1
+
+            # Resets everyone so they haven't acted for the next round of betting, except for those who are all in.
             @active_players.map do |player|
-              @active_players.delete(player) if player.folded == true
-            end
-
-            # If a player is still active and has no chips left, they are all in.
-            @all_in_players = 0
-            @active_players.map do |player|
-              @all_in_players += 1 if player.chip_stack.zero?
-            end
-
-            # If the player is all in and there are players who aren't all in rotate the array to check the next player.
-            if @active_players[0].acted == true && @active_players[0].chip_stack.zero? && @active_players.length != @all_in_players
-              @active_players.rotate!
-
-            # If the player was the initial raiser and they haven't had their bet raised, move onto the next stage of the hand.
-            elsif (@active_players[0].acted == true) && (@active_players[0].current_bet == @table_current_bet)
-              @stage_of_play += 1
-
-              # Resets everyone so they haven't acted for the next round of betting, except for those who are all in.
-              @active_players.map do |player|
-                if player.current_bet == @table_current_bet
-                  player.acted = false unless player.chip_stack.zero?
-                end
-                player.current_bet = 0
+              if player.current_bet == @table_current_bet
+                player.acted = false unless player.chip_stack.zero?
               end
-              @table_current_bet = 0
-              break
-
-            else
-              # If all of the above conditions fail, it means the player needs to make a move.
-              ready_check(@active_players[0])
-              player_action
+              player.current_bet = 0
             end
+            @table_current_bet = 0
+            break
+
+          else
+            # If all of the above conditions fail, it means the player needs to make a move.
+            ready_check(@active_players[0])
+            player_action
           end
         end
       end
     end
   end
+end
 
 # ******  VARIABLE ADJUSTMENTS AND SETTINGS HERE  ******
 

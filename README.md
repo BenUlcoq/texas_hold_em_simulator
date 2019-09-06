@@ -1,6 +1,9 @@
 # Terminal Application - Multiplayer Texas Hold ‘ Em Simulator
 Created by Ben Ulcoq for Coder Academy’s FastTrack Bootcamp Term One Assignment Two.
 
+## Instructions for Use
+See the help file!
+
 # Purpose and Scope
 Texas Hold ‘Em Simulator is a multi user application aimed at providing an environment for players to hone their skills and challenge one another to games of heads-up Texas Hold ‘Em Poker.  The application simulates the flow of a poker game by having users choose what actions to perform within the game (fold, raise, call or check ) when it is their turn. Once the hand being played reaches its conclusion, a winner is determined and the chip counts for each player are adjusted if necessary. 
 
@@ -98,11 +101,11 @@ The initially conceived structure for this particular application was made up of
 * `@player_name` a string containing the player’s name, passed via command line argument when running the application.
 
 ### Ruby Gems
-Colorize used for UI improvement in the form of coloured text.
-Ruby Poker used for hand strength comparison.
-Artii used for word art.
-Random Data used to generate random names when not supplied.
-Launchy used for opening external windows and links.
+* Colorize used for UI improvement in the form of coloured text.
+* Ruby Poker used for hand strength comparison.
+* Artii used for word art.
+* Random Data used to generate random names when not supplied.
+* Launchy used for opening external windows and links.
 
 ## Deviation from the Implementation Plan and Agile Development
 During the development process, a number of issues were encountered regarding viability, efficiency and complexity of the code structure that needed to be addressed.
@@ -124,9 +127,14 @@ Throughout most of the development process, test driven development techniques w
 
 As outlined above, the development technique strayed slightly from the test driven development principles as the program became more complex. This was done due to time constraints and being unfamiliar with testing techniques. Overall, the quality suffered before refactoring and also made the process of refactoring more difficult.
 
+## Future Extensibility
+The application has been designed to be as extensible as possible to allow for further development beyond the scope of the assignment in order to serve as a development side project.
 
-## Instructions for Use
-See the help file!
+The game could be improved to include NPC players who follow a rudimentary decision making process in order to make the game far more streamlined and able to be useful for a single user.
+
+Additionally, multiple games could be created to allow players to constantly be involved without the need to sit around and wait for the opponents to make a decision every time.
+
+Different card games could also be implemented and make use of the deck class.
 
 ## Accessibility
 Given the simple nature of the application, there was very little room for accessibility to be an issue. However, it is still an important aspect to consider when planning the development of any application. The WCAG 2.1 ‘Guidelines at a Glance’  provides an overview of the ways in which applications should be made accessible for all users.
@@ -137,6 +145,8 @@ Having consulted the guidelines, it was found that timing was an aspect of acces
 Given the simplistic nature of the program, there were no clear issues with regards to the ethical or social consequences of developing this application.
 
 However, it can be argued that Texas Hold ‘Em and Poker in general is a form of gambling. Therefore, the rules and regulations surrounding gambling needed to be consulted to ensure that, legally, the application was within specifications. After reviewing Queensland responsible gambling Code of Practice, it was determined that there were no laws being broken. The game does not have any form of monetary risk, with all value being won or lost self-contained within the game and reset upon the termination of the application. As such, the application did not involve gambling and was within specification.
+
+ASCII Art used available here: http://www.asciiartfarts.com/20060209.html
 
 
 
