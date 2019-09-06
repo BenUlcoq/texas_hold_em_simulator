@@ -43,28 +43,38 @@ class Poker
   def play_poker
     # Checks to see that the players want to continue.
     while @game_running
-
       # Starts the hand.
-      poker_hand
+        poker_hand
+        # Once the hand is over we need to payout the winner.
+        if @game_running
+          # If we reach showdown we calculate everyone's best hands and then find the winner(s).
+          if @active_players.length != 1
+            best_hand
+            determine_winner
+          end
+          # Once we know the winner(s) (or there's only one person left in the hand), we pay them out.
+          payout
+          # Rotate the player positions so the blinds change.
+          @player_positions.rotate!
+          # Lets the game know that the welcome message isn't needed any more - we just want to play poker!
+          @hand_played = true
+          zero_chips
 
-      # Once the hand is over we need to payout the winner.
-      if @game_running
-        # If we reach showdown we calculate everyone's best hands and then find the winner(s).
-        if @active_players.length != 1
-          best_hand
-          determine_winner
+          # If a player has won, let them know and exit the game.
+          if @player_positions.length == 1
+            system "clear"
+            puts "#{@player_positions[0].player_name} has won the game. Congratulations!"
+            puts "Press any key to exit."
+            STDIN.gets.chomp
+            exit
+          end
+        else
+          break
         end
-        # Once we know the winner(s) (or there's only one person left in the hand), we pay them out.
-        payout
-        # Rotate the player positions so the blinds change.
-        @player_positions.rotate!
-        # Lets the game know that the welcome message isn't needed any more - we just want to play poker!
-        @hand_played = true
-      else
-        break
-      end
 
     end
+
+    play_poker if @game_running
 
     # The game is no longer running - let's head home.
     run_home_screen
@@ -82,7 +92,6 @@ class Poker
     if @game_running
 
       # Resets and reinitializes everything required for the start of a new hand.
-      zero_chips
       reset_values
       set_blinds
       init_deck
@@ -157,7 +166,7 @@ def reset_values
   @table_current_bet = 0
   @stage_of_play = 0
   @active_players = @player_positions.clone
-  @active_players.map do |player|
+  @active_players.each do |player|
     player.hole_cards = []
     player.folded = false
     player.current_bet = 0
@@ -211,6 +220,7 @@ def deal_flop
   puts ''
   print 'The flop is: '
   card_output(@community_cards)
+  puts ""
   sleep(3)
 end
 
@@ -221,6 +231,7 @@ def deal_post_flop
   # Moves the top card of the deck into the community table cards array.
   @community_cards.push(@deck.cards.shift)
   print 'The community cards are: '
+  puts ""
   card_output(@community_cards)
   sleep(3)
 end
