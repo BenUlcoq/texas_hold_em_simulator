@@ -9,7 +9,7 @@ require_relative 'player'
 require_relative 'interface'
 
 class Poker
-  attr_reader :player_positions, :deck, :community_cards, :active_players, :pot_size
+  attr_reader :player_positions, :deck, :community_cards, :active_players, :pot_size, :winner_found
   attr_accessor :table_current_bet
 
   def initialize(number_of_players, args)
@@ -62,6 +62,11 @@ class Poker
 
           # If a player has won, let them know and exit the game.
           if @player_positions.length == 1
+            
+            # Used for testing purposes
+            # @winner_found = ['true']
+            # return @winner_found
+
             system "clear"
             puts "#{@player_positions[0].player_name} has won the game. Congratulations!"
             puts "Press any key to exit."
@@ -233,6 +238,7 @@ def deal_post_flop
   print 'The community cards are: '
   puts ""
   card_output(@community_cards)
+  puts ""
   sleep(3)
 end
 

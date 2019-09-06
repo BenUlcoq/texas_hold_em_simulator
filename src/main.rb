@@ -13,8 +13,8 @@ require_relative 'poker'
 end
 # If the player has entered incorrect data then an error is outputted.
 # Otherwise, creates an instance of the Poker class.
-if @argv.length > 10 || @number_of_players > 9
-  puts 'Please enter an integer value less than 9 for number of players.'
+if @argv.length > 10 || @number_of_players > 9 || @number_of_players < 2
+  puts 'Please enter an integer value between 2 and 9 for the number of players.'
 elsif @argv.length - 1 > Integer(@argv[0])
   puts 'Too many names have been entered, either increase the number of players or remove some names.'
 else
